@@ -41,10 +41,6 @@ function DropdownComponent({ onChange }: DropdowncomponentProps) {
     setShowOptions((v) => !v);
   };
 
-  useEffect(() => {
-    onChange(sortType);
-  }, [sortType]);
-
   return (
     <div
       className='border py-2 px-2 rounded text-sm relative cursor-pointer'
@@ -67,12 +63,18 @@ function DropdownComponent({ onChange }: DropdowncomponentProps) {
         <div className='absolute top-10 border right-0 bg-white'>
           <div className='px-2 py-2 '>Sort options</div>
           <DropdownOptionComponent
-            onClick={() => setSortType('Best match')}
+            onClick={() => {
+              setSortType('Best match');
+              onChange('Best match');
+            }}
             active={sortType === 'Best match'}
             option={'Best match'}
           ></DropdownOptionComponent>
           <DropdownOptionComponent
-            onClick={() => setSortType('Most stars')}
+            onClick={() => {
+              setSortType('Most stars');
+              onChange('Most stars');
+            }}
             active={sortType === 'Most stars'}
             option={'Most stars'}
           ></DropdownOptionComponent>

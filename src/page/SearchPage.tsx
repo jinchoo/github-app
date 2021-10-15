@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 
 import axios from 'axios';
 import RepositoryComponent from '../component/RepositoryComponent';
-import { Repositories, Repository } from '../type/Repository';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Repositories } from '../type/Repository';
+import { useHistory, useLocation } from 'react-router-dom';
 import DropdownComponent from '../component/DropdownComponent';
 type Sort = '' | 'stars' | 'forks' | 'help-wanted-issues';
 
@@ -13,7 +13,7 @@ function useQuery(query: string) {
 
 function SearchPage() {
   const API_URL = 'https://api.github.com/search/repositories';
-  const [sort, setSort] = useState<Sort>('stars');
+  const [sort, setSort] = useState<Sort>('');
   const [searchResultList, setSearchResultList] = useState<Repositories>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('');
@@ -21,6 +21,7 @@ function SearchPage() {
   const [error, setError] = useState<string | null>(null);
   const history = useHistory();
   const location = useLocation();
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   const query = useQuery(location.search);
   const q = query.get('q');
@@ -52,6 +53,9 @@ function SearchPage() {
   };
 
   const searchGithub = (query: string, sort = '') => {
+    // TODO: add loading screen
+    setError(''); // reset error if there's any
+
     axios
       .get(`${API_URL}`, {
         headers: {
@@ -78,11 +82,13 @@ function SearchPage() {
   };
 
   useEffect(() => {
-    if (q) {
+    // should only rerender once and when page load with ?q=
+    if (q && isFirstLoad) {
+      setIsFirstLoad(false);
       setSearchTerm(q);
       searchGithub(q, sort);
     }
-  }, [q, sort]);
+  }, [q, sort, isFirstLoad]);
 
   useEffect(() => {
     if (searchTerm) {
@@ -92,7 +98,7 @@ function SearchPage() {
         searchGithub(searchTerm, sort);
       }
     }
-  }, [searchTerm, filter, sort]);
+  }, [filter, sort]); // don't add searchTerm, cause page to search on change
 
   const showResult = searchResultList.length > 0 && (
     <div className='grid grid-cols-12 gap-4'>
@@ -177,9 +183,8 @@ function SearchPage() {
         );
       })} */}
       {error && (
-        <div className='py-2 px-2 bg-red-300'>
-          {error}
-          <div className='text-right'>X</div>
+        <div className='flex py-2 px-2 bg-red-300'>
+          <div className='flex-1'>{error}</div>
         </div>
       )}
     </div>
