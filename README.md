@@ -2,6 +2,10 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Tailwind CSS Requirement
+
+Tailwind CSS requires Node.js 12.13.0 or higher.
+
 ## Available Scripts
 
 In the project directory, you can run:
